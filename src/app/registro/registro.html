@@ -1,0 +1,309 @@
+<main class="registro-wrapper">
+  <section class="card" aria-labelledby="form-title">
+    <header class="card-header">
+      <h1 id="form-title">Banco Andrés</h1>
+      <p>Cuenta con nosotros</p>
+    </header>
+
+    <form
+      [formGroup]="registroForm"
+      (ngSubmit)="onSubmit()"
+      novalidate
+      aria-label="Formulario de registro"
+    >
+      <!-- NOMBRE -->
+      <div
+        class="form-group"
+        [class.has-error]="nombre.invalid && (nombre.touched || nombre.dirty)"
+      >
+        <label for="nombre">Nombre completo</label>
+        <input
+          id="nombre"
+          type="text"
+          formControlName="nombre"
+          placeholder="Ej. Andrés López"
+          autocomplete="name"
+          aria-describedby="nombre-error"
+          [class.input-error]="nombre.invalid && (nombre.touched || nombre.dirty)"
+          [class.input-valid]="nombre.valid && nombre.touched"
+        />
+        <div
+          id="nombre-error"
+          class="error-messages"
+          *ngIf="nombre.invalid && (nombre.touched || nombre.dirty)"
+          role="alert"
+        >
+          <span *ngIf="nombre.errors?.['required']">⚠ El nombre es obligatorio.</span>
+          <span *ngIf="nombre.errors?.['minlength']">⚠ Mínimo 3 caracteres.</span>
+          <span *ngIf="nombre.errors?.['maxlength']">⚠ Máximo 50 caracteres.</span>
+          <span *ngIf="nombre.errors?.['pattern']">⚠ Solo se permiten letras y espacios.</span>
+        </div>
+        <p class="valid-msg" *ngIf="nombre.valid && nombre.touched" aria-live="polite">
+          ✔ Nombre válido
+        </p>
+      </div>
+
+      <!-- EMAIL -->
+      <div class="form-group" [class.has-error]="email.invalid && (email.touched || email.dirty)">
+        <label for="email">Correo electrónico</label>
+        <div class="input-wrapper">
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="ejemplo@correo.com"
+            autocomplete="email"
+            aria-describedby="email-error"
+            [class.input-error]="email.invalid && (email.touched || email.dirty)"
+            [class.input-valid]="email.valid && email.touched"
+          />
+          <span *ngIf="email.pending" aria-label="Verificando correo">
+            <i class="fa fa-spinner fa-spin"></i>
+          </span>
+        </div>
+        <div
+          id="email-error"
+          class="error-messages"
+          *ngIf="email.invalid && (email.touched || email.dirty)"
+          role="alert"
+        >
+          <span *ngIf="email.errors?.['required']">⚠ El correo es obligatorio.</span>
+          <span *ngIf="email.errors?.['email']">⚠ Formato de correo inválido.</span>
+          <span *ngIf="email.errors?.['emailTaken']">⚠ Este correo ya está registrado.</span>
+        </div>
+        <p
+          class="valid-msg"
+          *ngIf="email.valid && email.touched && !email.pending"
+          aria-live="polite"
+        >
+          ✔ Correo disponible
+        </p>
+      </div>
+
+      <!-- CONTRASEÑA -->
+      <div
+        class="form-group"
+        [class.has-error]="password.invalid && (password.touched || password.dirty)"
+      >
+        <label for="password">Contraseña</label>
+        <div class="input-wrapper">
+          <input
+            id="password"
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="password"
+            placeholder="Mínimo 8 caracteres"
+            autocomplete="new-password"
+            aria-describedby="password-hint password-error"
+            [class.input-error]="password.invalid && (password.touched || password.dirty)"
+            [class.input-valid]="password.valid && password.touched"
+          />
+          <button
+            type="button"
+            class="toggle-pwd"
+            (click)="showPassword = !showPassword"
+            [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+          >
+            <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+          </button>
+        </div>
+
+        <ul
+          id="password-hint"
+          class="password-hint"
+          *ngIf="password.touched"
+          aria-label="Requisitos de contraseña"
+        >
+          <li>
+            <small [class.ok]="!password.errors?.['minlength'] && password.value?.length >= 8"
+              >✔ Mínimo 8 caracteres</small
+            >
+          </li>
+          <li>
+            <small [class.ok]="password.value && /[A-Z]/.test(password.value)"
+              >✔ Una mayúscula</small
+            >
+          </li>
+          <li>
+            <small [class.ok]="password.value && /[a-z]/.test(password.value)"
+              >✔ Una minúscula</small
+            >
+          </li>
+          <li>
+            <small [class.ok]="password.value && /\d/.test(password.value)">✔ Un número</small>
+          </li>
+          <li>
+            <small [class.ok]="password.value && /[\W_]/.test(password.value)"
+              >✔ Un carácter especial</small
+            >
+          </li>
+        </ul>
+
+        <div
+          id="password-error"
+          class="error-messages"
+          *ngIf="password.invalid && (password.touched || password.dirty)"
+          role="alert"
+        >
+          <span *ngIf="password.errors?.['required']">⚠ La contraseña es obligatoria.</span>
+          <span *ngIf="password.errors?.['minlength']">⚠ Mínimo 8 caracteres.</span>
+          <span *ngIf="password.errors?.['pattern']"
+            >⚠ Debe tener mayúscula, minúscula, número y carácter especial.</span
+          >
+        </div>
+      </div>
+
+      <!-- CONFIRMAR CONTRASEÑA -->
+      <div
+        class="form-group"
+        [class.has-error]="
+          (confirmarPassword.invalid || registroForm.errors?.['passwordMismatch']) &&
+          (confirmarPassword.touched || confirmarPassword.dirty)
+        "
+      >
+        <label for="confirmarPassword">Confirmar contraseña</label>
+        <div class="input-wrapper">
+          <input
+            id="confirmarPassword"
+            [type]="showConfirm ? 'text' : 'password'"
+            formControlName="confirmarPassword"
+            placeholder="Repite tu contraseña"
+            autocomplete="new-password"
+            aria-describedby="confirmar-error"
+            [class.input-error]="
+              (confirmarPassword.invalid || registroForm.errors?.['passwordMismatch']) &&
+              (confirmarPassword.touched || confirmarPassword.dirty)
+            "
+            [class.input-valid]="
+              confirmarPassword.valid &&
+              confirmarPassword.touched &&
+              !registroForm.errors?.['passwordMismatch']
+            "
+          />
+          <button
+            type="button"
+            class="toggle-pwd"
+            (click)="showConfirm = !showConfirm"
+            [attr.aria-label]="showConfirm ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+          >
+            <i class="fa" [ngClass]="showConfirm ? 'fa-eye-slash' : 'fa-eye'"></i>
+          </button>
+        </div>
+        <div
+          id="confirmar-error"
+          class="error-messages"
+          *ngIf="confirmarPassword.touched || confirmarPassword.dirty"
+          role="alert"
+        >
+          <span *ngIf="confirmarPassword.errors?.['required']"
+            >⚠ Debes confirmar tu contraseña.</span
+          >
+          <span *ngIf="registroForm.errors?.['passwordMismatch']"
+            >⚠ Las contraseñas no coinciden.</span
+          >
+        </div>
+        <p
+          class="valid-msg"
+          *ngIf="
+            confirmarPassword.valid &&
+            confirmarPassword.touched &&
+            !registroForm.errors?.['passwordMismatch']
+          "
+          aria-live="polite"
+        >
+          ✔ Las contraseñas coinciden
+        </p>
+      </div>
+
+      <!-- FECHA DE NACIMIENTO -->
+      <div
+        class="form-group"
+        [class.has-error]="
+          fechaNacimiento.invalid && (fechaNacimiento.touched || fechaNacimiento.dirty)
+        "
+      >
+        <label for="fechaNacimiento">Fecha de nacimiento</label>
+        <input
+          id="fechaNacimiento"
+          type="date"
+          formControlName="fechaNacimiento"
+          [max]="today"
+          autocomplete="bday"
+          aria-describedby="fecha-error"
+          [class.input-error]="
+            fechaNacimiento.invalid && (fechaNacimiento.touched || fechaNacimiento.dirty)
+          "
+          [class.input-valid]="fechaNacimiento.valid && fechaNacimiento.touched"
+        />
+        <div
+          id="fecha-error"
+          class="error-messages"
+          *ngIf="fechaNacimiento.invalid && (fechaNacimiento.touched || fechaNacimiento.dirty)"
+          role="alert"
+        >
+          <span *ngIf="fechaNacimiento.errors?.['required']"
+            >⚠ La fecha de nacimiento es obligatoria.</span
+          >
+          <span *ngIf="fechaNacimiento.errors?.['minAge']">
+            ⚠ Debes tener al menos 18 años. (Tu edad actual:
+            {{ fechaNacimiento.errors?.['minAge'].actual }} años)
+          </span>
+        </div>
+        <p
+          class="valid-msg"
+          *ngIf="fechaNacimiento.valid && fechaNacimiento.touched"
+          aria-live="polite"
+        >
+          ✔ Edad válida
+        </p>
+      </div>
+
+      <!-- TÉRMINOS Y CONDICIONES -->
+      <div class="form-group form-check" [class.has-error]="terminos.invalid && terminos.touched">
+        <input
+          id="terminos"
+          type="checkbox"
+          formControlName="terminos"
+          aria-describedby="terminos-error"
+        />
+        <label for="terminos">
+          Acepto los
+          <a href="#" (click)="$event.preventDefault()">términos y condiciones</a>
+          y la
+          <a href="#" (click)="$event.preventDefault()">política de privacidad</a>
+        </label>
+        <div
+          id="terminos-error"
+          class="error-messages"
+          *ngIf="terminos.invalid && terminos.touched"
+          role="alert"
+        >
+          <span *ngIf="terminos.errors?.['required']"
+            >⚠ Debes aceptar los términos para continuar.</span
+          >
+        </div>
+      </div>
+
+      <!-- BOTONES -->
+      <footer class="form-actions">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="registroForm.invalid || isSubmitting"
+          [attr.aria-busy]="isSubmitting"
+        >
+          <span *ngIf="!isSubmitting">Crear cuenta</span>
+          <span *ngIf="isSubmitting"> <i class="fa fa-spinner fa-spin"></i> Enviando... </span>
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="onReset()"
+          [disabled]="isSubmitting"
+        >
+          Limpiar
+        </button>
+      </footer>
+    </form>
+  </section>
+</main>
