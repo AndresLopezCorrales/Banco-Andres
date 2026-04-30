@@ -1,4 +1,4 @@
-# 🏦 Banco Andrés — Formulario de Registro
+# Banco Andrés — Formulario de Registro
 
 ## Screenshots
 
